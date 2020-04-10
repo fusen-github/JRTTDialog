@@ -72,6 +72,19 @@
     CGFloat bottomY = self.view.bounds.size.height - 50;
     
     self.bottomView.frame = CGRectMake(0, bottomY, width, 50);
+    
+    CAShapeLayer *mask = self.view.layer.mask;
+    
+    if (mask == nil) {
+        
+        mask = [[CAShapeLayer alloc] init];
+        
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:self.view.bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight cornerRadii:CGSizeMake(15, 15)];
+        
+        mask.path = path.CGPath;
+        
+        self.view.layer.mask = mask;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -115,7 +128,7 @@
 //        NSLog(@"UIGestureRecognizerStateEnded - scrollViewDidScroll");
 //    }
     
-    NSLog(@"state = %tu", scrollView.panGestureRecognizer.state);
+//    NSLog(@"state = %tu", scrollView.panGestureRecognizer.state);
     
     CGFloat offsetY = scrollView.contentOffset.y;
     
@@ -131,7 +144,7 @@
     {
         CGFloat transformTY = self.view.transform.ty;
 
-        NSLog(@"transformTY:%lf", transformTY);
+//        NSLog(@"transformTY:%lf", transformTY);
 
         if (transformTY > 0) {
 
@@ -180,7 +193,7 @@ static CGFloat beginDraggingOffsetY = 0;
     CGFloat panTranslationY = [pan translationInView:pan.view].y;
     
     /// 下拉 offset > 0， 上拉 offset < 0
-    NSLog(@"panTranslationY:%lf", panTranslationY);
+//    NSLog(@"panTranslationY:%lf", panTranslationY);
     
     if (pan.state == UIGestureRecognizerStateBegan) {
         
@@ -199,6 +212,7 @@ static CGFloat beginDraggingOffsetY = 0;
                 CGFloat detalY = panTranslationY - beginDraggingOffsetY;
                 
 //                NSLog(@"detalY:%lf", detalY);
+                detalY = detalY < 0 ? 0 : detalY;
                 
                 self.view.transform = CGAffineTransformMakeTranslation(0, detalY);
             }
@@ -207,11 +221,11 @@ static CGFloat beginDraggingOffsetY = 0;
         {
             self.view.transform = CGAffineTransformIdentity;
             
-            NSLog(@"来---");
+//            NSLog(@"来---");
         }
         else
         {
-            NSLog(@"panTranslationY < 0");
+//            NSLog(@"panTranslationY < 0");
             
             self.view.transform = CGAffineTransformIdentity;
         }
@@ -219,7 +233,7 @@ static CGFloat beginDraggingOffsetY = 0;
     }
     else if (pan.state == UIGestureRecognizerStateEnded)
     {
-        NSLog(@"UIGestureRecognizerStateEnded");
+//        NSLog(@"UIGestureRecognizerStateEnded");
     }
 }
 

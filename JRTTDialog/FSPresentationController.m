@@ -16,7 +16,7 @@
     
     NSLog(@"containerSize: %@", NSStringFromCGSize(containerSize));
     
-    CGFloat top = 30;
+    CGFloat top = 70;
     
     CGRect newFrame = CGRectMake(0, top, containerSize.width, containerSize.height - top);
     
