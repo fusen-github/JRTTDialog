@@ -29,13 +29,18 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIView *topView = [[UIView alloc] init];
-    
+
     self.topView = topView;
-    
+
     topView.backgroundColor = [UIColor redColor];
-    
+
     [self.view addSubview:topView];
     
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(topViewPan:)];
+    
+    [self.view addGestureRecognizer:pan];
+    
+    // 表格
     UITableView *tableView = [[UITableView alloc] init];
     
     self.tableView = tableView;
@@ -108,7 +113,26 @@
     return cell;
 }
 
-
+//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+//{
+//    static NSString * const headerId = @"header";
+//
+//    UIView *header = [tableView dequeueReusableHeaderFooterViewWithIdentifier:headerId];
+//
+//    if (header == nil) {
+//
+//        header = [[UIView alloc] init];
+//
+//        header.backgroundColor = [UIColor blueColor];
+//    }
+//
+//    return header;
+//}
+//
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+//{
+//    return 40;
+//}
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
@@ -250,25 +274,50 @@ static CGFloat beginDraggingOffsetY = 0;
         
         if ([newValue integerValue] == UIGestureRecognizerStateEnded) {
             
-            if (self.view.transform.ty < self.view.bounds.size.height * 0.4) {
-                
-                [UIView animateWithDuration:0.25 animations:^{
-                   self.view.transform = CGAffineTransformIdentity;
-                }];
-            }
-            else
-            {
-                [UIView animateWithDuration:0.25 animations:^{
-                    
-                    self.view.transform = CGAffineTransformMakeTranslation(0, self.view.bounds.size.height);
-                    
-                    self.presentationController.containerView.alpha = 0.05;
-                    
-                } completion:^(BOOL finished) {
-                    [self dismissViewControllerAnimated:NO completion:NULL];
-                }];
-            }
+            [self panEnd];
         }
+    }
+}
+
+- (void)panEnd
+{
+    if (self.view.transform.ty < self.view.bounds.size.height * 0.4) {
+        
+        [UIView animateWithDuration:0.25 animations:^{
+           self.view.transform = CGAffineTransformIdentity;
+        }];
+    }
+    else
+    {
+        [UIView animateWithDuration:0.25 animations:^{
+            
+            self.view.transform = CGAffineTransformMakeTranslation(0, self.view.bounds.size.height);
+            
+            self.presentationController.containerView.alpha = 0.05;
+            
+        } completion:^(BOOL finished) {
+            [self dismissViewControllerAnimated:NO completion:NULL];
+        }];
+    }
+}
+
+- (void)topViewPan:(UIPanGestureRecognizer *)pan
+{
+    CGFloat panTranslationY = [pan translationInView:pan.view].y;
+    
+//    NSLog(@"panTranslationY = %lf", panTranslationY);
+    
+    if (panTranslationY < 0) {
+        panTranslationY = 0;
+    }
+    
+    if (pan.state == UIGestureRecognizerStateChanged) {
+        
+        self.view.transform = CGAffineTransformMakeTranslation(0, panTranslationY);
+    }
+    else if (pan.state == UIGestureRecognizerStateEnded)
+    {
+        [self panEnd];
     }
 }
 
